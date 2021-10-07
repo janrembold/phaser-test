@@ -10,13 +10,14 @@ export default class PreloadScene extends Phaser.Scene {
   }
 
   create() {
-    this.add.image(0,0, 'phaser-logo').setOrigin(0,0)
+    // this.add.image(0,0, 'phaser-logo').setOrigin(0,0)
     // .setInteractive()
     // .on('pointerdown', () => {
     //   this.scene.start('MainScene')
     // })
 
-    this.scene.start('MainScene')
+    // this.scene.start('MainScene')
+    this.scene.launch('MainScene')
 
     /**
      * This is how you would dynamically import the mainScene class (with code splitting),
