@@ -32,8 +32,9 @@ export default class MainScene extends Phaser.Scene {
     this.addShips();
     this.addScrolling();
 
-    // window.addEventListener('game-resize', ((event: CustomEvent) => this.resize(event)) as EventListener);
     this.loadLayers();
+
+    // window.addEventListener('game-resize', ((event: CustomEvent) => this.resize(event)) as EventListener);
   }
 
   update() {
@@ -55,24 +56,6 @@ export default class MainScene extends Phaser.Scene {
         this.physics.moveToObject(ship, targetXY, getRandomInt(12, 40));
       }
     }
-    // if (this.spaceship.body.speed > 0) {
-    //   const distance = Phaser.Math.Distance.Between(
-    //     this.spaceship.x,
-    //     this.spaceship.y,
-    //     this.target.x,
-    //     this.target.y,
-    //   );
-    //   //  4 is our distance tolerance, i.e. how close the source can get to the target
-    //   //  before it is considered as being there. The faster it moves, the more tolerance is required.
-    //   if (distance < 4) {
-    //     // console.log(Phaser.Math.Angle.Between(this.spaceship.x, this.spaceship.y, this.target.x, this.target.y));
-    //     this.spaceship.body.reset(this.target.x, this.target.y);
-    //   }
-    // }
-    // this.spaceship.x += 2
-    // if(this.spaceship.x > this.cameras.main.width) {
-    //   this.spaceship.x = 0
-    // }
   }
 
   loadLayers() {
@@ -98,11 +81,8 @@ export default class MainScene extends Phaser.Scene {
   addScrolling() {
     const camera = this.cameras.main;
     this.input.on('wheel', (pointer, dx, dy, dz) => {
-      console.log(dx, dy, dz);
-
       if (dz > 0) {
-        const newZoom = camera.zoom - 0.003;
-        console.log(newZoom);
+        const newZoom = camera.zoom - 0.004;
 
         if (newZoom >= 1) {
           camera.zoom = newZoom;
@@ -110,16 +90,12 @@ export default class MainScene extends Phaser.Scene {
       }
 
       if (dz < 0) {
-        const newZoom = camera.zoom + 0.003;
-        console.log(newZoom);
+        const newZoom = camera.zoom + 0.004;
 
         if (newZoom < 1.8) {
           camera.zoom = newZoom;
         }
       }
-
-      // this.camera.centerOn(pointer.worldX, pointer.worldY);
-      // this.camera.pan(pointer.worldX, pointer.worldY, 2000, "Power2");
     });
 
     const pinch = (this as any).rexGestures.add.pinch();
@@ -141,6 +117,7 @@ export default class MainScene extends Phaser.Scene {
       .on(
         'pinch',
         function ({ scaleFactor }: any) {
+          console.log('pinch', scaleFactor);
           camera.zoom *= scaleFactor;
         },
         this,
