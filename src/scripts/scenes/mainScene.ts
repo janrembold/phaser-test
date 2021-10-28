@@ -1,15 +1,14 @@
 import { WORLD_HEIGHT, WORLD_WIDTH } from '../game';
+import { getRandomInt, getRandomWorldPosition } from '../utils/random';
 interface ShipObject {
   ship: Phaser.Types.Physics.Arcade.ImageWithDynamicBody;
   target: { x: number; y: number };
 }
 
+const SHIP_COUNT = 10;
+
 export default class MainScene extends Phaser.Scene {
-  fpsText;
-  spaceship;
   space;
-  target = new Phaser.Math.Vector2();
-  shipCount = 10;
   ships: ShipObject[] = [];
 
   constructor() {
@@ -38,21 +37,24 @@ export default class MainScene extends Phaser.Scene {
   }
 
   update() {
-    // for (let index = 0; index < this.shipCount; index++) {
-    //   const { ship, target } = this.ships[index];
-    //   if (ship.body.speed > 0) {
-    //     const distance = Phaser.Math.Distance.Between(ship.x, ship.y, target.x, target.y);
-    //     if (distance < 4) {
-    //       ship.body.reset(target.x, target.y);
-    //     }
-    //   } else {
-    //     const targetXY = getRandomWorldPosition();
-    //     const rad = Phaser.Math.Angle.Between(ship.x, ship.y, targetXY.x, targetXY.y);
-    //     this.ships[index].target = targetXY;
-    //     ship.setAngle(Phaser.Math.RadToDeg(rad) + 90);
-    //     this.physics.moveToObject(ship, targetXY, getRandomInt(12, 40));
-    //   }
-    // }
+    for (let index = 0; index < SHIP_COUNT; index++) {
+      const { ship, target } = this.ships[index];
+
+      if (ship.body.speed > 0) {
+        const distance = Phaser.Math.Distance.Between(ship.x, ship.y, target.x, target.y);
+
+        if (distance < 4) {
+          ship.body.reset(target.x, target.y);
+        }
+      } else {
+        const targetXY = getRandomWorldPosition();
+        const rad = Phaser.Math.Angle.Between(ship.x, ship.y, targetXY.x, targetXY.y);
+        
+        this.ships[index].target = targetXY;
+        ship.setAngle(Phaser.Math.RadToDeg(rad) + 90);
+        this.physics.moveToObject(ship, targetXY, getRandomInt(12, 40));
+      }
+    }
     // if (this.spaceship.body.speed > 0) {
     //   const distance = Phaser.Math.Distance.Between(
     //     this.spaceship.x,
@@ -86,15 +88,11 @@ export default class MainScene extends Phaser.Scene {
   }
 
   addShips() {
-    const shipX = this.physics.world.bounds.centerX;
-    const shipY = this.physics.world.bounds.centerY;
-    this.physics.add.image(shipX, shipY, 'spaceship').setScale(0.08).setOrigin(0.5);
-
-    // for (let index = 0; index < this.shipCount; index++) {
-    //   const { x, y } = getRandomXY();
-    //   const spaceship = this.physics.add.image(x, y, 'spaceship').setScale(0.06);
-    //   this.ships.push({ ship: spaceship, target: { x, y } });
-    // }
+    for (let index = 0; index < SHIP_COUNT; index++) {
+      const { x, y } = getRandomWorldPosition();
+      const spaceship = this.physics.add.image(x, y, 'spaceship').setScale(0.06).setOrigin(0.5);
+      this.ships.push({ ship: spaceship, target: { x, y } });
+    }
   }
 
   addScrolling() {

@@ -4,7 +4,7 @@ import PreloadScene from './scenes/preloadScene';
 import { getWindowDimensions } from './utils/sizes';
 
 export const WORLD_WIDTH = 2560;
-export const WORLD_HEIGHT = 1600;
+export const WORLD_HEIGHT = 1440;
 let resizeTimer: number;
 
 export interface GameResizeEvent {
