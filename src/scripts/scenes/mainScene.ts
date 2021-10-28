@@ -84,7 +84,7 @@ export default class MainScene extends Phaser.Scene {
       if (dz > 0) {
         const newZoom = camera.zoom - 0.004;
 
-        if (newZoom >= 1) {
+        if (newZoom >= 1.5) {
           camera.zoom = newZoom;
         }
       }
