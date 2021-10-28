@@ -8,7 +8,7 @@ export default class TestScene extends Phaser.Scene {
   }
 
   create() {
-    this.add.image(100, 100, 'earth').setOrigin(0, 0).setScale(0.1);
+    this.add.image(100, 100, 'earth').setOrigin(0.5).setScale(0.1);
 
     const camera = this.cameras.main;
     this.input.on('wheel', (pointer, dx, dy, dz) => {

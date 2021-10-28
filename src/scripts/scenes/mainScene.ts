@@ -1,14 +1,14 @@
-import { GameResizeEvent, getRandomXY } from '../game';
+import { GameResizeEvent, WORLD_HEIGHT, WORLD_WIDTH } from '../game';
 interface ShipObject {
   ship: Phaser.Types.Physics.Arcade.ImageWithDynamicBody;
   target: { x: number; y: number };
 }
 
-function getRandomInt(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min)) + min;
-}
+// function getRandomInt(min, max) {
+//   min = Math.ceil(min);
+//   max = Math.floor(max);
+//   return Math.floor(Math.random() * (max - min)) + min;
+// }
 
 export default class MainScene extends Phaser.Scene {
   fpsText;
@@ -17,25 +17,34 @@ export default class MainScene extends Phaser.Scene {
   target = new Phaser.Math.Vector2();
   shipCount = 10;
   ships: ShipObject[] = [];
+  ship;
+  canvas;
 
   constructor() {
     super({ key: 'MainScene' });
   }
 
   preload() {
+    this.canvas = this.sys.game.canvas;
+
     this.load.image('spaceship', 'assets/img/spaceship.png');
     this.load.image('space', 'assets/img/testbild.jpg');
     // this.load.image('space', 'assets/img/space.jpg');
   }
 
   resize({ detail }: CustomEvent<GameResizeEvent>) {
-    console.log('resize main', event);
-    const { width, height } = detail;
+    console.log(
+      'resize physics world bounds',
+      this.physics.world.bounds.centerX,
+      this.physics.world.bounds.centerY,
+    );
+    console.log('resize main', detail);
+    // const { width, height } = detail;
 
-    this.cameras.resize(window.innerWidth, window.innerHeight);
+    // this.cameras.resize(window.innerWidth, window.innerHeight);
 
-    this.space.x = width / 2;
-    this.space.y = height / 2;
+    // this.space.x = width / 2;
+    // this.space.y = height / 2;
     // this.space.setSize(window.innerWidth, window.innerHeight);
 
     //   const screen = new ScreenSizeDetector();
@@ -65,6 +74,17 @@ export default class MainScene extends Phaser.Scene {
   // }
 
   create() {
+    console.log('mainScene create');
+
+    this.cameras.main.setBounds(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
+    this.cameras.main.centerOn(WORLD_WIDTH / 2, WORLD_HEIGHT / 2);
+
+    this.physics.world.setBounds(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
+
+    console.log('physics', this);
+    console.log('physics world bounds', this.physics.world.bounds.centerX, this.physics.world.bounds.centerY);
+    console.log('cameras.main', this.cameras.main);
+
     import(/* webpackChunkName: "testScene" */ './testScene').then((testScene) => {
       this.scene.add('TestScene', testScene.default, true);
     });
@@ -73,12 +93,13 @@ export default class MainScene extends Phaser.Scene {
       this.scene.add('DebugScene', debugScene.default, true);
     });
 
-    // const camera = this.camera;
-    this.space = this.add
-      .image(this.sys.canvas.width / 2, this.sys.canvas.height / 2, 'space')
-      .setOrigin(0.5);
-    // this.space.displayWidth = this.sys.canvas.width;
-    // this.space.displayHeight = this.sys.canvas.height;
+    this.space = this.add.image(0, 0, 'space').setOrigin(0);
+
+    const shipX = this.physics.world.bounds.centerX;
+    const shipY = this.physics.world.bounds.centerY;
+    this.ship = this.physics.add.image(shipX, shipY, 'spaceship').setScale(0.6).setOrigin(0.5);
+
+    // this.cameras.main.setPosition(WORLD_HEIGHT / 2, WORLD_WIDTH / 2);
 
     const camera = this.cameras.main;
     // const camera2 = this.cameras.scene.
@@ -131,66 +152,27 @@ export default class MainScene extends Phaser.Scene {
         this,
       );
 
-    // .setInteractive()
-    // .on('pointerdown', (pointer) => {
-    //   this.target.x = pointer.x;
-    //   this.target.y = pointer.y;
-
-    //   // Move at 200 px/s:
-    //   this.physics.moveToObject(this.spaceship, this.target, 120);
-
-    //   const rad = Phaser.Math.Angle.Between(this.spaceship.x, this.spaceship.y, this.target.x, this.target.y);
-    //   this.spaceship.setAngle(Phaser.Math.RadToDeg(rad) + 90);
-    // });
-
-    for (let index = 0; index < this.shipCount; index++) {
-      const { x, y } = getRandomXY();
-      const spaceship = this.physics.add.image(x, y, 'spaceship').setScale(0.06);
-      this.ships.push({ ship: spaceship, target: { x, y } });
-    }
-
-    // setTimeout(() => {
-    //   camera.startFollow(this.ships[0].ship)
-    // }, 2000)
-
-    // new PhaserLogo(this, this.cameras.main.width / 2, 0)
-
-    // // display the Phaser.VERSION
-    // this.add
-    //   .text(this.cameras.main.width - 15, 15, `Phaser v${Phaser.VERSION}`, {
-    //     color: '#000000',
-    //     fontSize: '24px'
-    //   })
-    //   .setOrigin(1, 0)
-
-    // this.scale.on('resize', this.resize, this);
-
     window.addEventListener('game-resize', ((event: CustomEvent) => this.resize(event)) as EventListener);
 
     this.scene.launch('TestScene');
   }
 
   update() {
-    for (let index = 0; index < this.shipCount; index++) {
-      const { ship, target } = this.ships[index];
-
-      if (ship.body.speed > 0) {
-        const distance = Phaser.Math.Distance.Between(ship.x, ship.y, target.x, target.y);
-
-        if (distance < 4) {
-          ship.body.reset(target.x, target.y);
-        }
-      } else {
-        const targetXY = getRandomXY();
-        const rad = Phaser.Math.Angle.Between(ship.x, ship.y, targetXY.x, targetXY.y);
-
-        this.ships[index].target = targetXY;
-
-        ship.setAngle(Phaser.Math.RadToDeg(rad) + 90);
-        this.physics.moveToObject(ship, targetXY, getRandomInt(12, 40));
-      }
-    }
-
+    // for (let index = 0; index < this.shipCount; index++) {
+    //   const { ship, target } = this.ships[index];
+    //   if (ship.body.speed > 0) {
+    //     const distance = Phaser.Math.Distance.Between(ship.x, ship.y, target.x, target.y);
+    //     if (distance < 4) {
+    //       ship.body.reset(target.x, target.y);
+    //     }
+    //   } else {
+    //     const targetXY = getRandomXY();
+    //     const rad = Phaser.Math.Angle.Between(ship.x, ship.y, targetXY.x, targetXY.y);
+    //     this.ships[index].target = targetXY;
+    //     ship.setAngle(Phaser.Math.RadToDeg(rad) + 90);
+    //     this.physics.moveToObject(ship, targetXY, getRandomInt(12, 40));
+    //   }
+    // }
     // if (this.spaceship.body.speed > 0)
     // {
     //   const distance = Phaser.Math.Distance.Between(this.spaceship.x, this.spaceship.y, this.target.x, this.target.y);
@@ -202,9 +184,7 @@ export default class MainScene extends Phaser.Scene {
     //         this.spaceship.body.reset(this.target.x, this.target.y);
     //     }
     // }
-
     // this.spaceship.x += 2
-
     // if(this.spaceship.x > this.cameras.main.width) {
     //   this.spaceship.x = 0
     // }
