@@ -10,5 +10,6 @@ export default class PhaserLogo extends Phaser.Physics.Arcade.Sprite {
       .on('pointerdown', () => {
         this.setVelocityY(-400)
       })
-  }
+  } 
 }
+    
