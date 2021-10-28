@@ -1,5 +1,3 @@
-import { DEFAULT_HEIGHT, DEFAULT_WIDTH } from '../game';
-
 export default class PreloadScene extends Phaser.Scene {
   constructor() {
     super({ key: 'PreloadScene' });
@@ -9,15 +7,9 @@ export default class PreloadScene extends Phaser.Scene {
     this.load.image('phaser-logo', 'assets/img/phaser-logo.png');
   }
 
-  create() {
-    this.add.image(DEFAULT_WIDTH / 2 - 100, DEFAULT_HEIGHT / 2 - 100, 'phaser-logo').setOrigin(0, 0);
-    // .setInteractive()
-    // .on('pointerdown', () => {
-    //   this.scene.start('MainScene')
-    // })
-    // this.scene.start('MainScene')
-    // this.scene.launch('MainScene');
-    // this.scene.launch('DebugScene');
+  async create() {
+    this.add.image(this.sys.canvas.width / 2, this.sys.canvas.height / 2, 'phaser-logo').setOrigin(0.5);
+
     /**
      * This is how you would dynamically import the mainScene class (with code splitting),
      * add the mainScene to the Scene Manager
@@ -28,6 +20,7 @@ export default class PreloadScene extends Phaser.Scene {
     const someCondition = true;
     if (someCondition) {
       setTimeout(() => {
+        // this.scene.start('MainScene');
         import(/* webpackChunkName: "mainScene" */ './mainScene').then((mainScene) => {
           this.scene.add('MainScene', mainScene.default, true);
         });
