@@ -12,7 +12,7 @@
     "format": "prettier --check src/scripts/**",
     "format:write": "prettier --write src/scripts/**",
     "predeploy": "npm-run-all build",
-    "deploy": "gh-pages -d build"
+    "deploy": "gh-pages -d dist"
   },
   "repository": {
     "type": "git",
