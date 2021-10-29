@@ -5,6 +5,8 @@ import { getWindowDimensions } from './utils/sizes';
 
 export const WORLD_WIDTH = 2560;
 export const WORLD_HEIGHT = 1440;
+export let MAX_ZOOM = 1;
+export const MIN_ZOOM = 2;
 let resizeTimer: number;
 
 export interface GameResizeEvent {
@@ -48,6 +50,8 @@ window.addEventListener('load', () => {
     const { width, height } = getWindowDimensions();
     const newWidth = Math.min(width, WORLD_WIDTH);
     const newHeight = Math.min(height, WORLD_HEIGHT);
+
+    MAX_ZOOM = Math.max(newWidth / WORLD_WIDTH, newHeight / WORLD_HEIGHT);
 
     game.scale.resize(newWidth, newHeight);
 

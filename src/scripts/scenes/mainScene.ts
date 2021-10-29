@@ -1,4 +1,4 @@
-import { WORLD_HEIGHT, WORLD_WIDTH } from '../game';
+import { MAX_ZOOM, MIN_ZOOM, WORLD_HEIGHT, WORLD_WIDTH } from '../game';
 import { getRandomInt, getRandomWorldPosition } from '../utils/random';
 interface ShipObject {
   ship: Phaser.Types.Physics.Arcade.ImageWithDynamicBody;
@@ -89,17 +89,17 @@ export default class MainScene extends Phaser.Scene {
       }
 
       if (dz > 0) {
-        const newZoom = camera.zoom - 0.004;
+        const newZoom = camera.zoom - 0.04;
 
-        if (newZoom >= 1) {
+        if (newZoom >= MAX_ZOOM) {
           camera.zoom = newZoom;
         }
       }
 
       if (dz < 0) {
-        const newZoom = camera.zoom + 0.004;
+        const newZoom = camera.zoom + 0.04;
 
-        if (newZoom < 1.8) {
+        if (newZoom < MIN_ZOOM) {
           camera.zoom = newZoom;
         }
       }
@@ -112,15 +112,15 @@ export default class MainScene extends Phaser.Scene {
     pinch.on(
       'pinch',
       ({ scaleFactor }: any) => {
+        const newZoom = camera.zoom * scaleFactor;
+
         console.log('pinch', scaleFactor);
         const elem = document.getElementById('resize');
         if (elem) {
-          elem.innerHTML = `PINCH ${scaleFactor}`;
+          elem.innerHTML = `PINCH ${newZoom}`;
         }
 
-        const newZoom = camera.zoom * scaleFactor;
-
-        if (newZoom >= 1 && newZoom < 1.8) {
+        if (newZoom >= MAX_ZOOM && newZoom < MIN_ZOOM) {
           camera.zoom = newZoom;
         }
       },
