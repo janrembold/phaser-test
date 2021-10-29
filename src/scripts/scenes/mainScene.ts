@@ -118,7 +118,11 @@ export default class MainScene extends Phaser.Scene {
           elem.innerHTML = `PINCH ${scaleFactor}`;
         }
 
-        camera.zoom *= scaleFactor;
+        const newZoom = camera.zoom * scaleFactor;
+
+        if (newZoom >= 1 && newZoom < 1.8) {
+          camera.zoom = newZoom;
+        }
       },
       this,
     );
