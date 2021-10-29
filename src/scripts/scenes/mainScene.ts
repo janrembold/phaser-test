@@ -30,7 +30,8 @@ export default class MainScene extends Phaser.Scene {
     this.space = this.add.image(0, 0, 'bg').setOrigin(0);
 
     this.addShips();
-    this.addScrolling();
+    this.setupDrag();
+    this.setupScrollwheel();
 
     this.loadLayers();
 
@@ -50,7 +51,7 @@ export default class MainScene extends Phaser.Scene {
       } else {
         const targetXY = getRandomWorldPosition();
         const rad = Phaser.Math.Angle.Between(ship.x, ship.y, targetXY.x, targetXY.y);
-        
+
         this.ships[index].target = targetXY;
         ship.setAngle(Phaser.Math.RadToDeg(rad) + 90);
         this.physics.moveToObject(ship, targetXY, getRandomInt(12, 40));
@@ -78,13 +79,18 @@ export default class MainScene extends Phaser.Scene {
     }
   }
 
-  addScrolling() {
+  setupScrollwheel() {
     const camera = this.cameras.main;
     this.input.on('wheel', (pointer, dx, dy, dz) => {
+      const elem = document.getElementById('resize');
+      if (elem) {
+        elem.innerHTML = 'WHEEL';
+      }
+
       if (dz > 0) {
         const newZoom = camera.zoom - 0.004;
 
-        if (newZoom >= 1.5) {
+        if (newZoom >= 1) {
           camera.zoom = newZoom;
         }
       }
@@ -97,30 +103,45 @@ export default class MainScene extends Phaser.Scene {
         }
       }
     });
+  }
 
+  setupPinch() {
+    const camera = this.cameras.main;
     const pinch = (this as any).rexGestures.add.pinch();
-    pinch
-      .on('drag1', ({ drag1Vector }: any) => {
-        const newX = camera.scrollX - drag1Vector.x / camera.zoom;
-        const newY = camera.scrollY - drag1Vector.y / camera.zoom;
-
-        if (newX >= 0) {
-          camera.scrollX = newX;
+    pinch.on(
+      'pinch',
+      ({ scaleFactor }: any) => {
+        console.log('pinch', scaleFactor);
+        const elem = document.getElementById('resize');
+        if (elem) {
+          elem.innerHTML = `PINCH ${scaleFactor}`;
         }
 
-        if (newY >= 0) {
-          camera.scrollY = newY;
-        }
+        camera.zoom *= scaleFactor;
+      },
+      this,
+    );
+  }
 
-        console.log('drag1Vector', drag1Vector, camera.scrollX, camera.scrollY);
-      })
-      .on(
-        'pinch',
-        function ({ scaleFactor }: any) {
-          console.log('pinch', scaleFactor);
-          camera.zoom *= scaleFactor;
-        },
-        this,
-      );
+  setupDrag() {
+    const camera = this.cameras.main;
+    const pinch = (this as any).rexGestures.add.pinch();
+    pinch.on('drag1', ({ drag1Vector }: any) => {
+      const elem = document.getElementById('resize');
+      if (elem) {
+        elem.innerHTML = 'DRAG';
+      }
+
+      const newX = camera.scrollX - drag1Vector.x / camera.zoom;
+      const newY = camera.scrollY - drag1Vector.y / camera.zoom;
+
+      if (newX >= 0) {
+        camera.scrollX = newX;
+      }
+
+      if (newY >= 0) {
+        camera.scrollY = newY;
+      }
+    });
   }
 }
