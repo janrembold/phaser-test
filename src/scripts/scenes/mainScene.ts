@@ -32,6 +32,7 @@ export default class MainScene extends Phaser.Scene {
     this.addShips();
     this.setupDrag();
     this.setupScrollwheel();
+    this.setupPinch();
 
     this.loadLayers();
 
