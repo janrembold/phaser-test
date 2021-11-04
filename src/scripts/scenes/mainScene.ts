@@ -1,4 +1,4 @@
-import { GameResizeEvent, MAX_ZOOM, MIN_ZOOM, WORLD_HEIGHT, WORLD_WIDTH } from '../game';
+import { MAX_ZOOM, MIN_ZOOM, WORLD_HEIGHT, WORLD_WIDTH } from '../game';
 import { getRandomInt, getRandomWorldPosition } from '../utils/random';
 interface ShipObject {
   ship: Phaser.Types.Physics.Arcade.ImageWithDynamicBody;
