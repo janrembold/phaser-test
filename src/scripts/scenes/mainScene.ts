@@ -1,4 +1,4 @@
-import { MAX_ZOOM, MIN_ZOOM, WORLD_HEIGHT, WORLD_WIDTH } from '../game';
+import { GameResizeEvent, MAX_ZOOM, MIN_ZOOM, WORLD_HEIGHT, WORLD_WIDTH } from '../game';
 import { getRandomInt, getRandomWorldPosition } from '../utils/random';
 interface ShipObject {
   ship: Phaser.Types.Physics.Arcade.ImageWithDynamicBody;
@@ -36,7 +36,7 @@ export default class MainScene extends Phaser.Scene {
 
     this.loadLayers();
 
-    // window.addEventListener('game-resize', ((event: CustomEvent) => this.resize(event)) as EventListener);
+    window.addEventListener('game-resize', ((event: CustomEvent) => this.resize(event)) as EventListener);
   }
 
   update() {
@@ -57,6 +57,18 @@ export default class MainScene extends Phaser.Scene {
         ship.setAngle(Phaser.Math.RadToDeg(rad) + 90);
         this.physics.moveToObject(ship, targetXY, getRandomInt(12, 40));
       }
+    }
+  }
+
+  resize() {
+    const camera = this.cameras.main;
+
+    if (camera.zoom >= MAX_ZOOM) {
+      camera.zoom = MAX_ZOOM;
+    }
+
+    if (camera.zoom < MIN_ZOOM) {
+      camera.zoom = MIN_ZOOM;
     }
   }
 
