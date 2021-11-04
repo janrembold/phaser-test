@@ -36,7 +36,7 @@ export default class MainScene extends Phaser.Scene {
 
     this.loadLayers();
 
-    window.addEventListener('game-resize', ((event: CustomEvent) => this.resize(event)) as EventListener);
+    window.addEventListener('game-resize', (() => this.resize()) as EventListener);
   }
 
   update() {
